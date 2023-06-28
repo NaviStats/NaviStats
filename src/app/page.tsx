@@ -12,6 +12,10 @@ import {
 } from 'chart.js';
 import { Bar } from 'react-chartjs-2';
 import { faker } from '@faker-js/faker';
+import React  from 'react';
+
+import useAbsDeaths from './data/AbsDeaths';
+
 
 ChartJS.register(
   CategoryScale,
@@ -21,6 +25,7 @@ ChartJS.register(
   Tooltip,
   Legend
 );
+
 
 
 export const options = {
@@ -36,32 +41,66 @@ export const options = {
   },
 };
 
-const labels = ['January', 'February', 'March', 'April', 'May', 'June', 'July'];
+const labels = ['2016', '2017', '2018', '2019'];
 
 export const data = {
   labels,
   datasets: [
     {
-      label: 'Dataset 1',
+      label: 'Road Deaths by Year',
       data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
       backgroundColor: 'rgba(53, 162, 235, 0.5)',
     }
   ],
 };
 
+
 export default function Home() {
+  const absDeathsData = useAbsDeaths();
+  console.log('absDeathsData Arr', absDeathsData);
+
   return (
     <main className="">
-      <div className="">
+      <div>
         <h1>NaviStats</h1>
       </div>
 
       <div className="">
+        <br></br>
         <p>Visualize data for global and US road traffic injuries and fatalities</p>
         <p>Promote funding and development of autonomous driving</p>
       </div>
 
-      <Bar options={options} data={data} />;
+      <div>
+      </div>
+      <Bar options={options} data={data} />
     </main>
   )
 }
+
+
+
+
+
+
+
+
+
+
+
+
+
+/**
+
+  // useEffect(() => {
+  //   const absDeaths = async () => {
+  //     const res = await fetch('/api/data');
+  //     const jsonData = await res.json();
+  //     setAbsDeathsData(jsonData.data);
+  //   };
+
+  //   absDeaths();
+  // }, []);
+
+
+*/
