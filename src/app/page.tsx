@@ -1,30 +1,36 @@
 'use client'
 
+import React  from 'react';
+import { Bar, Line } from 'react-chartjs-2';
 import Image from 'next/image';
+import useProcessedData from './panel-one/page';
+import { faker } from '@faker-js/faker';
+
 import {
   Chart as ChartJS,
   CategoryScale,
   LinearScale,
   BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend,
 } from 'chart.js';
-import { Bar } from 'react-chartjs-2';
-import { faker } from '@faker-js/faker';
-import React  from 'react';
 
-import useAbsDeaths from './data/AbsDeaths';
 
 
 ChartJS.register(
   CategoryScale,
   LinearScale,
   BarElement,
+  PointElement,
+  LineElement,
   Title,
   Tooltip,
   Legend
 );
+
 
 
 
@@ -39,28 +45,40 @@ export const options = {
       text: 'Fatal road traffic injuries over time',
     },
   },
-};
-
-const labels = ['2016', '2017', '2018', '2019'];
-
-export const data = {
-  labels,
-  datasets: [
-    {
-      label: 'Road Deaths by Year',
-      data: labels.map(() => faker.number.int({ min: 0, max: 1000 })),
-      backgroundColor: 'rgba(53, 162, 235, 0.5)',
-    }
-  ],
+  scales: {
+    y: {
+      min: 1200000,
+      max: 1300000
+    },
+  },
+  layout: {
+    padding: 100,
+  },
+  maintainAspectRatio: true,
+  barPercentage: 0.2,
 };
 
 
 export default function Home() {
-  const absDeathsData = useAbsDeaths();
-  console.log('absDeathsData Arr', absDeathsData);
+  const globalDeathsByYear = useProcessedData();
+
+  const data = {
+    labels: ['2016', '2017', '2018', '2019'],
+    datasets: [
+      {
+        label: 'Absolute road deaths by year',
+        data: [globalDeathsByYear[2016], globalDeathsByYear[2017], globalDeathsByYear[2018], globalDeathsByYear[2019]],
+        borderColor: 'rgba(52, 152, 219)',
+        backgroundColor: 'rgba(52, 152, 219, 0.7)',
+        barThickness: 70, 
+        barPercentage: 1.0,
+      }, 
+    ],
+  };
+  
 
   return (
-    <main className="">
+    <main className="main">
       <div>
         <h1>NaviStats</h1>
       </div>
@@ -71,36 +89,10 @@ export default function Home() {
         <p>Promote funding and development of autonomous driving</p>
       </div>
 
-      <div>
-      </div>
-      <Bar options={options} data={data} />
+      <Bar 
+        options={options} 
+        data={data} 
+      />
     </main>
   )
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-/**
-
-  // useEffect(() => {
-  //   const absDeaths = async () => {
-  //     const res = await fetch('/api/data');
-  //     const jsonData = await res.json();
-  //     setAbsDeathsData(jsonData.data);
-  //   };
-
-  //   absDeaths();
-  // }, []);
-
-
-*/
