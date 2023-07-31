@@ -3,14 +3,14 @@ import React, { useState, useEffect } from 'react';
 export default function useAbsDeaths() {
   const [absDeathsData, setAbsDeathsData] = useState(null);
 
+  const fetchAbsDeaths = async () => {
+    const res = await fetch('/api/who-data');
+    const jsonData = await res.json();
+    // console.log(jsonData.data.value[0]);
+    setAbsDeathsData(jsonData.data);
+  };
+  
   useEffect(() => {
-    const fetchAbsDeaths = async () => {
-      const res = await fetch('/api/who-data');
-      const jsonData = await res.json();
-      // console.log(jsonData.data.value[0]);
-      setAbsDeathsData(jsonData.data);
-    };
-
     fetchAbsDeaths();
   }, []);
 

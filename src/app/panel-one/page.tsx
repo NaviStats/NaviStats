@@ -4,16 +4,15 @@ import useAbsDeaths from '../data/AbsDeaths';
 
 const useProcessedData = () => {
     const absDeathsData = useAbsDeaths();
-    // console.log('absDeathsData Arr', absDeathsData);
 
     const [globalDeathsByYear, setglobalDeathsByYear] = useState({})
 
     useEffect(() => {
         if (absDeathsData) {
-            let totalDeaths2019: number = Math.round(getTotalsByYear(absDeathsData, 2019, 'mean'));
-            let totalDeaths2018: number = Math.round(getTotalsByYear(absDeathsData, 2018, 'mean'));
-            let totalDeaths2017: number = Math.round(getTotalsByYear(absDeathsData, 2017, 'mean'));
-            let totalDeaths2016: number = Math.round(getTotalsByYear(absDeathsData, 2016, 'mean'));
+            let totalDeaths2019 = Math.round(getTotalsByYear(absDeathsData, 2019, 'mean'));
+            let totalDeaths2018 = Math.round(getTotalsByYear(absDeathsData, 2018, 'mean'));
+            let totalDeaths2017 = Math.round(getTotalsByYear(absDeathsData, 2017, 'mean'));
+            let totalDeaths2016 = Math.round(getTotalsByYear(absDeathsData, 2016, 'mean'));
 
             let newGlobalDeathsByYear = {
                 '2016': totalDeaths2016,
@@ -30,10 +29,26 @@ const useProcessedData = () => {
     return globalDeathsByYear;
 }
 
+interface DeathData {
+    TimeDim: number, 
+    NumericValue: number,
+    low: number, 
+    high: number,
+    Dim1: string,
+    SpatialDimType: string,
+}; 
 
-//create total # deaths / year object
-function getTotalsByYear (array: any, year: number, quartile: string) {
-    //SpatialDim: "AFG", TimeDim: 2019, NumericValue: xxx, SpatialDimType: COUNTRY | BTSX = both sex
+type Quartile = 'mean' | 'lower' | 'upper';
+
+
+/**
+ * Calculates total global deaths for a given year
+ * @param array - An array of objects. Each object includes NumericValue = # deaths, TimeDim = year, SpatialDimType = country, Dim1 = BTSX (both sex)
+ * @param year - Year to filter by. This should be a four-digit year
+ * @param quartile - Quartile to use. Should be mean, lower, or upper
+ * @returns  - Total deaths for the specified year and quartile
+ */
+function getTotalsByYear (array: DeathData[], year: number, quartile: Quartile): number {
     let total: number = 0;
     let absDeaths: number = 0;
     for (let i = 0; i < array.length; i++) {
