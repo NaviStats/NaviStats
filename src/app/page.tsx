@@ -2,44 +2,16 @@
 
 import React, { useEffect, useState }  from 'react';
 import { Bar, Line } from 'react-chartjs-2';
-import Image from 'next/image';
 import useProcessedData from './panel-one/page';
-import Box from '@mui/material/Box';
-import Card from '@mui/material/Card';
-import Container from '@mui/material/Container';
-import Typography from '@mui/material/Typography';
-import Button from '@mui/material/Button';
-import { styled, createTheme, ThemeProvider } from '@mui/material/styles';
-import Grid from '@mui/material/Grid';
-import Paper from '@mui/material/Paper';
-import Select, { SelectChangeEvent } from '@mui/material/Select'
-import MenuItem from '@mui/material/MenuItem';
-import InputLabel from '@mui/material/InputLabel';
-import FormControl from '@mui/material/FormControl';
-
+import { 
+  Box, Card, Container, Typography, Grid, Paper, Select, MenuItem, InputLabel, FormControl, ThemeProvider, createTheme
+} from '@mui/material';
 import {
-  Chart as ChartJS,
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend,
+  Chart as ChartJS, CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend,
 } from 'chart.js';
 
-
-
 ChartJS.register(
-  CategoryScale,
-  LinearScale,
-  BarElement,
-  PointElement,
-  LineElement,
-  Title,
-  Tooltip,
-  Legend
+  CategoryScale, LinearScale, BarElement, PointElement, LineElement, Title, Tooltip, Legend
 );
 
 const darkTheme = createTheme({
@@ -48,8 +20,8 @@ const darkTheme = createTheme({
   },
 });
 
-
-export const options = {
+//Chart appearance options, for smaller and larger Y-axes
+export const optionsBig = {
   responsive: true,
   plugins: {
     legend: {
@@ -62,17 +34,42 @@ export const options = {
   },
   scales: {
     y: {
-      min: 1200000,
-      max: 1300000
+      min: 1000000,
+      max: 1500000
     },
   },
   layout: {
-    padding: 100,
+    padding: 50,
   },
   maintainAspectRatio: true,
   barPercentage: 0.2,
 };
 
+export const optionsSmall = {
+  responsive: true,
+  plugins: {
+    legend: {
+      position: 'bottom' as const,
+    },
+    title: {
+      display: true,
+      text: 'Fatal road traffic injuries over time',
+    },
+  },
+  scales: {
+    y: {
+      min: 0,
+      max: 100000
+    },
+  },
+  layout: {
+    padding: 50,
+  },
+  maintainAspectRatio: true,
+  barPercentage: 0.2,
+};
+
+//Dropdown menu to select region
 function SelectRegion({region, setRegion}) {
   const handleChange = (event: SelectChangeEvent) => {
     setRegion(event.target.value as string);
@@ -87,29 +84,14 @@ function SelectRegion({region, setRegion}) {
           value={region}
           onChange={handleChange}
         >
-          <MenuItem value={'global'}>Global</MenuItem>
           <MenuItem value={'USA'}>USA</MenuItem>
+          <MenuItem value={'global'}>Global</MenuItem>
         </Select>
       </FormControl>
     </Box>
   );
 }
 
-function createDataObjForRegion(region, totalDeathsByYear) {
-  return {
-    labels: ['2016', '2017', '2018', '2019'],
-    datasets: [
-      {
-        label: `Absolute road deaths by year, ${region}`,
-        data: [totalDeathsByYear[2016], totalDeathsByYear[2017], totalDeathsByYear[2018], totalDeathsByYear[2019]],
-        borderColor: 'rgba(52, 152, 219)',
-        backgroundColor: 'rgba(52, 152, 219, 0.7)',
-        barThickness: 70, 
-        barPercentage: 1.0,
-      }, 
-    ],
-  }
-}
 
 function LoadingComponent() {
   return(
@@ -120,10 +102,9 @@ function LoadingComponent() {
 }
 
 export default function Home() {
-  const [region, setRegion] = useState('global');
+  const [region, setRegion] = useState('USA');
   const totalDeathsByYear = useProcessedData(region);
   const [isLoading, setIsLoading] = useState(true);
-  console.log('parent home component, totalDeathsByYear', totalDeathsByYear)
 
   useEffect(() => {
     if (totalDeathsByYear && Object.keys(totalDeathsByYear).length > 0) {
@@ -131,15 +112,6 @@ export default function Home() {
     }
   }, [totalDeathsByYear])
 
-  //Approach 3
-  // const dataByRegion = {
-  //   region: isLoading ? null : createDataObjForRegion(region, totalDeathsByYear),
-  // }
-  // const data = dataByRegion[region];
-  // const data = isLoading ? null : createDataObjForRegion(region, totalDeathsByYear);
-  // console.log('data obj', data);
-
-  //Approach 1
   const data = {
     labels: ['2016', '2017', '2018', '2019'],
     datasets: [
@@ -153,44 +125,6 @@ export default function Home() {
       }, 
     ],
   }
-
-  //Approach 2
-  // const [data, setData] = useState(
-  //   {
-  //     labels: ['2016', '2017', '2018', '2019'],
-  //     datasets: [
-  //       {
-  //         label: `Absolute road deaths by year, ${region}`,
-  //         data: [totalDeathsByYear[2016], totalDeathsByYear[2017], totalDeathsByYear[2018], totalDeathsByYear[2019]],
-  //         borderColor: 'rgba(52, 152, 219)',
-  //         backgroundColor: 'rgba(52, 152, 219, 0.7)',
-  //         barThickness: 70, 
-  //         barPercentage: 1.0,
-  //       }, 
-  //     ],
-  //   }
-  // );
-  
-  // useEffect(() => {
-  //   setData(
-  //     {
-  //       labels: ['2016', '2017', '2018', '2019'],
-  //       datasets: [
-  //         {
-  //           label: `Absolute road deaths by year, ${region}`,
-  //           data: [totalDeathsByYear[2016], totalDeathsByYear[2017], totalDeathsByYear[2018], totalDeathsByYear[2019]],
-  //           borderColor: 'rgba(52, 152, 219)',
-  //           backgroundColor: 'rgba(52, 152, 219, 0.7)',
-  //           barThickness: 70, 
-  //           barPercentage: 1.0,
-  //         }, 
-  //       ],
-  //     }
-  //   )
-  // }, [totalDeathsByYear, region])
-
-
-  console.log('data obj', data);
 
   return (
     <ThemeProvider theme={darkTheme}>
@@ -214,19 +148,16 @@ export default function Home() {
               >
                 NaviStats
               </Typography>
-              {isLoading ? <LoadingComponent /> : 
-                <Typography
-                  variant="h6" 
-                  align="center" 
-                  color="text.secondary" 
-                  paragraph
-                >
-                  Visualize data for global and US road traffic injuries and fatalities
-                </Typography>
-              }
+              <Typography
+                variant="h6" 
+                align="center" 
+                color="text.secondary" 
+                paragraph
+              >
+                Visualize data for global and US road traffic injuries and fatalities
+              </Typography>
             </Box>
           </Box>
-          {isLoading ? null : (
           <Container>
             <Grid container spacing={2}>
               <Grid item xs={4}>
@@ -281,10 +212,12 @@ export default function Home() {
                     flexDirection: 'column'
                   }}
                 >
-                <Bar 
-                  data={data}
-                  options={options} 
-                />          
+                {isLoading ? <LoadingComponent /> : 
+                  <Bar 
+                    data={data}
+                    options={region === "USA" ? optionsSmall : optionsBig} 
+                  />
+                }              
                 </Paper>
                 <br></br>
                 <Grid item xs={2}>
@@ -293,7 +226,6 @@ export default function Home() {
               </Grid>
             </Grid>
           </Container>
-          )}
         </main>
       </Box>
     </ThemeProvider>

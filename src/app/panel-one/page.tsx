@@ -28,8 +28,6 @@ const useProcessedData = (region: string) => {
         }
     }, [absDeathsData, region])
 
-    // console.log('totalDeathsByYear', totalDeathsByYear);
-
     return totalDeathsByYear;
 }
 
@@ -51,9 +49,10 @@ type Quartile = 'mean' | 'lower' | 'upper';
  * @param array - An array of objects. Each object includes death data for a country for a year. NumericValue = # deaths, TimeDim = year, SpatialDimType = country, Dim1 = BTSX (both sex)
  * @param year - Year to filter by. This should be a four-digit year
  * @param quartile - Quartile to use. Should be mean, lower, or upper
+ * @param country - Three-digit code for a WHO country (e.g., USA), or 'global' for all countries combined
  * @returns  - Total deaths for the specified year and quartile
  */
-function getTotalsByYear (array: DeathData[], year: number, quartile: Quartile, country?: string): number {
+function getTotalsByYear (array: DeathData[], year: number, quartile: Quartile, country: string): number {
     let total: number = 0;
     let absDeaths: number = 0;
     for (let i = 0; i < array.length; i++) {
@@ -63,14 +62,12 @@ function getTotalsByYear (array: DeathData[], year: number, quartile: Quartile, 
         else if (quartile === "upper") absDeaths = array[i].high;
       
       if (dataYear === year && array[i].Dim1 === "BTSX" && array[i].SpatialDimType === "COUNTRY") {
-        // console.log('region in getTotalsByYear', country);
+        console.log('in func getTotalsByYear', country);
         if (country === array[i].SpatialDim) {
             // console.log('country code if region usa', array[i].SpatialDim);
             total += absDeaths;
-            // console.log(total);
         } else if (country === 'global'){
             total += absDeaths;
-            // console.log(total);
         }
       }
     }
